@@ -1,8 +1,19 @@
 import streamlit as st
-from akinator.client import Akinator
+
+# -------- SAFE IMPORT --------
+try:
+    from akinator.client import Akinator
+except:
+    Akinator = None
 
 st.set_page_config(page_title="Akinator Game", page_icon="🧞", layout="centered")
 st.title("🧞 Akinator Game")
+
+# -------- CHECK MODULE --------
+if Akinator is None:
+    st.error("❌ Akinator module failed to load on server.")
+    st.info("This app may not work online due to dependency issues.")
+    st.stop()
 
 # ---------------- STATE INIT ----------------
 def init_state():
@@ -50,8 +61,14 @@ if not st.session_state.game_started:
 if st.session_state.game_started and st.session_state.aki:
     aki = st.session_state.aki
 
-    if aki.question:
-        st.markdown(f"**Question {st.session_state.step + 1}:** {aki.question}")
+    try:
+        question = aki.question
+    except:
+        st.session_state.error = True
+        st.rerun()
+
+    if question:
+        st.markdown(f"**Question {st.session_state.step + 1}:** {question}")
         st.write(f"Confidence: {aki.progression:.2f}%")
 
         cols = st.columns(5)
@@ -73,7 +90,7 @@ if st.session_state.game_started and st.session_state.aki:
             if st.button("Probably Not"):
                 answer = 'pn'
 
-        # -------- ANSWER HANDLING --------
+        # -------- ANSWER --------
         if answer:
             try:
                 with st.spinner("Thinking..."):
@@ -86,8 +103,8 @@ if st.session_state.game_started and st.session_state.aki:
                 st.session_state.error = True
                 st.rerun()
 
-        # -------- AUTO GUESS (SAFE) --------
-        if aki.win:   # ✅ ONLY when ready
+        # -------- SAFE AUTO GUESS --------
+        if getattr(aki, "win", False):
             try:
                 aki.choose()
                 st.session_state.game_started = False
@@ -100,14 +117,15 @@ if st.session_state.game_started and st.session_state.aki:
         st.markdown("Loading question...")
 
 # ---------------- RESULT ----------------
-if not st.session_state.game_started and st.session_state.aki and st.session_state.aki.win:
+if not st.session_state.game_started and st.session_state.aki:
     aki = st.session_state.aki
 
-    st.success(f"I guess: **{aki.name_proposition}**\n\n{aki.description_proposition}")
+    if getattr(aki, "win", False):
+        st.success(f"I guess: **{aki.name_proposition}**\n\n{aki.description_proposition}")
 
-    if aki.photo:
-        st.image(aki.photo, width=200)
+        if aki.photo:
+            st.image(aki.photo, width=200)
 
-    if st.button("Play Again"):
-        st.session_state.clear()
-        st.rerun()
+        if st.button("Play Again"):
+            st.session_state.clear()
+            st.rerun()
