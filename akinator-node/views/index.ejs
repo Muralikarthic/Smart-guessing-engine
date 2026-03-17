@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Akinator Game</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #72EDF2 10%, #5151E5 100%);
+            color: #fff;
+            text-align: center;
+            padding: 50px;
+        }
+        h1, h2 {
+            margin-bottom: 20px;
+        }
+        button {
+            margin: 10px;
+            padding: 10px 20px;
+            font-size: 16px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+        button:hover {
+            background-color: #444;
+        }
+        .guess-container {
+            margin-top: 30px;
+        }
+        img {
+            max-width: 200px;
+            border-radius: 10px;
+        }
+    </style>
+</head>
+<body>
+    <h1>🌟 Akinator Game</h1>
+
+    <% if (!gameFinished && question) { %>
+        <h2>Question <%= questionCount + 1 %>:</h2>
+        <p><strong><%= question %></strong></p>
+        <form method="POST">
+            <button type="submit" name="action" value="yes">Yes</button>
+            <button type="submit" name="action" value="no">No</button>
+            <button type="submit" name="action" value="idk">I don't know</button>
+            <button type="submit" name="action" value="probably">Probably</button>
+            <button type="submit" name="action" value="probably not">Probably not</button>
+            <br><br>
+            <button type="submit" name="action" value="reset">Reset</button>
+        </form>
+        <p>Progression: <%= progression %>%</p>
+    <% } else if (!gameFinished) { %>
+        <form method="POST">
+            <button type="submit" name="action" value="start">Start Game</button>
+        </form>
+    <% } else { %>
+        <div class="guess-container">
+            <h2>I guess: <%= guess.name %></h2>
+            <p><%= guess.description %></p>
+            <img src="<%= guess.image_url %>" alt="Guess Image" />
+            <form method="POST">
+                <button type="submit" name="action" value="reset">Play Again</button>
+            </form>
+        </div>
+    <% } %>
+</body>
+</html>

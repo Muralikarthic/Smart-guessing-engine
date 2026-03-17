@@ -1,0 +1,4 @@
+python -m pip install akinator    
+python examples/basic.py   
+streamlit run streamlit_app.py
+python -m streamlit run streamlit_app.py
