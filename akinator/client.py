@@ -174,7 +174,7 @@ class Client:
             self.flag_photo = data["flag_photo"]
             self.photo = data["photo"]
         else:
-            self.akitude = data["akitude"]
+            self.akitude = data.get("akitude") or data.get("attitude")
             self.step = int(data["step"])
             self.progression = float(data["progression"])
             self.question = data["question"]
